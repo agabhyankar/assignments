@@ -25,10 +25,12 @@
 
 -----------------------------------------------------
 Spent 6 hours on research and implementations of different terraform modules.
+
 Scalabality:
 For scalablity terraform  GKE modules are used. google_container_cluster and google_container_node_pool have attributes to add and enable scalability in the clusters and nodes.
 Auto Scaling configurations were added which allows the cluster to scale when specific threshold are reached and manage the cluster accordingly. Container nodes also have scaling enable which sets minimum or maximum nodes available at a time
 Replicas can modified on WP configuration module to maintain available pod replicas at a given time.
+
 Security and Hardening:
 Most of the communication is happening within the cluster and public endpoints are properly handled.
 DB endpoint is also only accessible within the cluster and getting accessed through google API.
