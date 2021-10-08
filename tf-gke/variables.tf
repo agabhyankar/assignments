@@ -1,5 +1,5 @@
 variable "project_id" {
-  default = "devops-ll-sandbox"
+  default = ""
 }
 
 variable "region" {

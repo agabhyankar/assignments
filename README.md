@@ -55,3 +55,7 @@ cd tf-gke && terraform init && terraform apply
 ### destroy GCP infra
 cd tf-gke && terraform init && terraform destroy
 ```
+
+## Security
+
+Since cluster already private, suggest to use cloudflare, it will allow protect non-prod env's + WAF
