@@ -1,0 +1,23 @@
+# MacOS trash files
+.DS_Store
+
+# Terraform modules
+.terraform
+
+# Terraform variables
+terraform.tfvars
+secrects.tf
+
+# Terraform state (for example repository)
+*.tfstate*
+
+# Terraform google cloud credentials for backend
+sa-terraform.json
+
+# Kubernetes config as output
+.kubeconfig.yaml
+
+
+# Generated values:
+tools/templates/.generated/*
+!tools/templates/.generated/.gitkeep
