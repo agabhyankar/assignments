@@ -8,7 +8,7 @@ Specificities:
 + No Highly availability: there are masters and nodes in 1 zone, but could be easily used with HA
 + Secured from outside: nodes have no external IPs, Internet access is granted via NAT router
 + L7 load balancing feature disabled: no automatic creation of load balancer resource on GCP when creating an ingress in K8S cluster. We want one public access through ingress-controller only.
-+ All recourses
++ All recourses created by official GCP modules.
 
 ## Code structure
 
@@ -32,7 +32,7 @@ Specificities:
 
 Installed with as Helm release [bitnami chart.](https://github.com/bitnami/charts/tree/master/bitnami/wordpress/)
 Configuration with [wp-values.yml](./tf-gke/wp-values.yml).
-Insalls 2 replicas of WP + hpa and pdb. Published as loadbalancer(lb ip will be in outputs URL.) MariaDB installs also as part of chart with PVC.
+Insalls 1 replicas of WP(for replicaCount > 1 need RWX PV. ) + hpa and pdb. Published as loadbalancer(lb ip will be in outputs URL.) MariaDB installs also as part of chart with PVC.
 **IMPORTANT** before apply update `wordpressPassword` in [wp-values.yml](./tf-gke/wp-values.yml). To create admin password.
 
 ## Usage

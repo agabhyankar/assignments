@@ -8,7 +8,6 @@ resource "helm_release" "wp_0" {
   verify           = false
   version          = "12.1.19"
   wait             = true
-  wait_for_jobs    = false
   values           = [file("wp-values.yml")]
 }
 
@@ -22,5 +21,6 @@ data "kubernetes_service" "wp_0" {
 }
 
 output "wordpress_loadbalancer_ip" {
-  value = data.kubernetes_service.wp_0.status[0].load_balancer[0].ingress[0].ip
+  value = data.kubernetes_service.wp_0.load_balancer_ingress.0.ip
+}
 }
