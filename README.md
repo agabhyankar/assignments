@@ -1,25 +1,61 @@
-# General Assignments
+# Google Kubernetes Engine (GKE)
 
-## Prerequisites
-* You need a github account to push your branch (submit your solution) to remote.
-* You might need an AWS/Azure/GCP account. Create one if you do not own one already. You can use free-tier resources for this test.
+Terraform code to manage Google Kubernetes Engine (GKE)
 
-## Updates
-* Do not push to main or "dev" branch
-* "dev" branch will have the assignments
-* Create your own branch to push updates
+## Overview
 
-## Terraform
-### Assignment 1 - test_wp_gke_code (Deploy Wordpress on GCP GKE starting from setup of a VPC)
-* Check the current terraform code and recommend as well as update the code to enhance adherence to standard practices
-  * IAC
-  * Scalability
-  * Security & Hardening
-  * Compliances
-  * Other
-    * What compliances are you aware of for this type of infrastructure? Pick one, How would you apply that here? Show code if possible
-    * What kind of scalability can be implemented here? Pick one, How would you implement it? Show code if possible
-    * What different security and hardening options are you aware of? Pick one, How would you approach it in this environment? Show code if possible
-  * If you plan to do more but not as code (items relevant to Other Section), feel free to update Readme with further plan of action.  
+Specificities:
++ No Highly availability: there are masters and nodes in 1 zone, but could be easily used with HA
++ Secured from outside: nodes have no external IPs, Internet access is granted via NAT router
++ L7 load balancing feature disabled: no automatic creation of load balancer resource on GCP when creating an ingress in K8S cluster. We want one public access through ingress-controller only.
++ All recourses created by official GCP modules.
 
+## Code structure
 
+```
+.
+├── README.md
+├── tf-gcp
+│   ├── cloudnat.tf
+│   ├── gke.tf
+│   ├── main.tf
+│   ├── network.tf
+│   └── variables.tf
+└── tf-gke
+    ├── main.tf
+    ├── variables.tf
+    ├── wp-values.yml
+    └── wp.tf
+```
+
+## WordPress
+
+Installed with as Helm release [bitnami chart.](https://github.com/bitnami/charts/tree/master/bitnami/wordpress/)
+Configuration with [wp-values.yml](./tf-gke/wp-values.yml).
+Insalls 1 replicas of WP(for replicaCount > 1 need RWX PV. ) + hpa and pdb. Published as loadbalancer(lb ip will be in outputs URL.) MariaDB installs also as part of chart with PVC.
+**IMPORTANT** before apply update `wordpressPassword` in [wp-values.yml](./tf-gke/wp-values.yml). To create admin password.
+
+## Usage
+
+Before start you need:
++ update `wordpressPassword` in [wp-values.yml](./tf-gke/wp-values.yml). To create admin password.
++ update `project_id` [variables.tf](./tf-gcp/variables.tf) specify GCP project.
++ (Optional) specify backend GCS bucket to store state remotely.
+
+```sh
+### create GCP infra
+cd tf-gcp && terraform init && terraform apply
+### destroy GCP infra
+cd tf-gcp && terraform init && terraform destroy
+```
+
+```sh
+### setup k8s resources(wordpress)
+cd tf-gke && terraform init && terraform apply
+### destroy GCP infra
+cd tf-gke && terraform init && terraform destroy
+```
+
+## Security
+
+Since cluster already private, suggest to use cloudflare, it will allow protect non-prod env's + WAF
