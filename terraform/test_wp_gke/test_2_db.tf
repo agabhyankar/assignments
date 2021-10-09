@@ -12,13 +12,20 @@ resource "google_sql_database_instance" "testwpdbvm" {
 
     ip_configuration {
       ipv4_enabled = true
-
-      authorized_networks {
-        name  = "sqlnet"
-        value = "0.0.0.0/0"
-      }
+      private_network     = google_compute_network.testvpc.id
     }
   }
+  
+  depends_on = [
+    google_service_networking_connection.private-vpc-connection
+  ]
+
+
+}
+
+// Get wordpress password secret from secret manager
+data "google_secret_manager_secret_version" "wordpress-admin-user-password" {
+  secret = "wordpress-admin-user-password"
 }
 
 //Creating SQL Database
@@ -35,7 +42,7 @@ resource "google_sql_database" "testwpdb" {
 resource "google_sql_user" "testwpdbuser" {
   name     = var.wpdb_user
   instance = google_sql_database_instance.testwpdbvm.name
-  password = var.wpdb_userpass
+  password = data.google_secret_manager_secret_version.wordpress-admin-user-password.secret_data
 
   depends_on = [
     google_sql_database_instance.testwpdbvm

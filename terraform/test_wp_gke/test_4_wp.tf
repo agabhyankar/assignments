@@ -15,6 +15,25 @@ provider "kubernetes" {
   )
 }
 
+    
+resource "kubernetes_persistent_volume_claim" "wpp" {
+  metadata {
+    name = "wp-per"
+    labels = {
+      env = "Demo"
+    }
+  }
+  wait_until_bound = false
+  spec {
+    access_modes = ["ReadWriteOnce"]
+    resources {
+      requests = {
+        storage = "2Gi"
+      }
+    }
+  }
+}
+
 //WordPress Deployment
 resource "kubernetes_deployment" "testwp_dep" {
   metadata {
@@ -48,7 +67,7 @@ resource "kubernetes_deployment" "testwp_dep" {
 
           env {
             name  = "WORDPRESS_DB_HOST"
-            value = "${google_sql_database_instance.testwpdbvm.ip_address.0.ip_address}"
+            value = google_sql_database_instance.testwpdbvm.ip_address.0.ip_address
           }
           env {
             name  = "WORDPRESS_DB_USER"
@@ -70,10 +89,17 @@ resource "kubernetes_deployment" "testwp_dep" {
           port {
             container_port = 80
           }
+
+        }
+        volume {
+         name = "wordpress-persistent-storage"
+         persistent_volume_claim {
+          claim_name = kubernetes_persistent_volume_claim.wpp.metadata[0].name
         }
       }
+     }
     }
-  }
+   }
 
   depends_on = [
     google_container_cluster.testgke_cluster,

@@ -10,7 +10,7 @@ resource "kubernetes_service" "test_wpservice" {
   spec {
     type     = "LoadBalancer"
     selector = {
-      pod = "${kubernetes_deployment.testwp_dep.spec.0.selector.0.match_labels.pod}"
+      pod = kubernetes_deployment.testwp_dep.spec.0.selector.0.match_labels.pod
     }
 
     port {
